@@ -1,13 +1,15 @@
 # FCN model
 # when tuning start with learning rate->mini_batch_size -> 
 # momentum-> #hidden_units -> # learning_rate_decay -> #layers 
-import tensorflow.keras as keras
+from tensorflow import keras
 import tensorflow as tf
 import numpy as np
 import time 
-
-from utils.utils import save_logs
+from utils.utils import create_directory, save_logs
 from utils.utils import calculate_metrics
+
+
+from sklearn.model_selection import KFold
 
 class Classifier_FCN:
 
@@ -52,18 +54,18 @@ class Classifier_FCN:
 
 		model_checkpoint = keras.callbacks.ModelCheckpoint(filepath=file_path, monitor='loss', 
 			save_best_only=True)
+		early_stopping = keras.callbacks.EarlyStopping(monitor='val_loss', patience=20, restore_best_weights=True)
 
-		self.callbacks = [reduce_lr,model_checkpoint]
+		self.callbacks = [reduce_lr,model_checkpoint,early_stopping]
 
 		return model 
 
-	def fit(self, x_train, y_train, x_val, y_val,y_true):
+	def fit(self, x_train, y_train, x_val, y_val,y_true,batch_size=16, epochs=500):
 		if not tf.test.is_gpu_available:
 			print('error')
 			exit()
 		# x_val and y_val are only used to monitor the test loss and NOT for training  
-		batch_size = 16
-		nb_epochs = 2000
+		nb_epochs = epochs
 
 		mini_batch_size = int(min(x_train.shape[0]/10, batch_size))
 
@@ -86,6 +88,8 @@ class Classifier_FCN:
 		save_logs(self.output_directory, hist, y_pred, y_true, duration)
 
 		keras.backend.clear_session()
+  
+		return hist
 
 	def predict(self, x_test, y_true,x_train,y_train,y_test,return_df_metrics = True):
 		model_path = self.output_directory + 'best_model.hdf5'

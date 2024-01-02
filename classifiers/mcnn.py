@@ -1,5 +1,5 @@
 # MCNN model
-import tensorflow.keras as keras
+from tensorflow import keras
 import tensorflow as tf
 import numpy as np 
 import time
@@ -133,10 +133,10 @@ class Classifier_MCNN:
 
         raise Exception('Error on pool factor')
 
-    def train(self, x_train, y_train, x_test, y_test,y_true, pool_factor=None, filter_size=None,do_train=True):
+    def train(self, x_train, y_train, x_test, y_test,y_true, pool_factor=None, filter_size=None,do_train=True,epochs=200):
         window_size = 0.2
         n_train_batch = 10
-        n_epochs = 200
+        n_epochs = epochs
         max_train_batch_size = 256
 
         # print('Original train shape: ', x_train.shape)
@@ -458,7 +458,7 @@ class Classifier_MCNN:
 
         model = keras.models.Model(inputs=input_layers, outputs=output_layer)
 
-        model.compile(loss='categorical_crossentropy', optimizer=keras.optimizers.Adam(lr=0.1),
+        model.compile(loss='categorical_crossentropy', optimizer=keras.optimizers.Adam(learning_rate=0.01),
             metrics=['accuracy'])
         
         return model 
@@ -471,7 +471,7 @@ class Classifier_MCNN:
             max_length = max(max_length, i)
         return input_shapes , max_length
 
-    def fit(self, x_train, y_train, x_test, y_test,y_true):
+    def fit(self, x_train, y_train, x_test, y_test,y_true,epochs=200):
         if not tf.test.is_gpu_available:
             print('error')
             exit()
@@ -486,7 +486,7 @@ class Classifier_MCNN:
                     str(pool_factor)+'/filter_size_'+str(filter_size)+'/' 
                 create_directory(self.output_directory)
                 df_metrics, model , valid_loss = self.train(x_train, y_train, x_test, 
-                                                          y_test,y_true,pool_factor,filter_size)
+                                                          y_test,y_true,pool_factor,filter_size,epochs=epochs)
 
                 if (valid_loss < best_valid_loss): 
                     best_valid_loss = valid_loss
