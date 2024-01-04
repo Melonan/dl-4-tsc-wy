@@ -106,3 +106,8 @@ venv.bak/
 .mypy_cache/
 
 .vscode
+
+
+*.hdf5
+archives/UCRArchive_2018.zip
+archives/UCRArchive_2018/
