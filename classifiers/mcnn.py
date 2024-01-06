@@ -14,7 +14,7 @@ class Classifier_MCNN:
         self.verbose = verbose
         self.pool_factors = [2,3,5] # used for hyperparameters grid search
         self.filter_sizes = [0.05,0.1,0.2] # used for hyperparameters grid search 
-
+        self.strategy = tf.distribute.MirroredStrategy()
     def slice_data(self, data_x, data_y, slice_ratio): 
         n = data_x.shape[0]
         length = data_x.shape[1]
@@ -143,9 +143,11 @@ class Classifier_MCNN:
         # print('Original test shape: ', x_test.shape)
 
         # split train into validation set with validation_size = 0.2 train_size 
-        x_train,y_train,x_val,y_val = self.split_train(x_train,y_train)
+        # x_train,y_train,x_val,y_val = self.split_train(x_train,y_train)
+        x_val,y_val = x_test,y_test
         
         ori_len = x_train.shape[1] # original_length of time series  
+        print("\nTrain process...\n original_length of time series :",ori_len)
         slice_ratio = 0.9
 
         if do_train == True:
@@ -257,8 +259,8 @@ class Classifier_MCNN:
         best_validation_loss = np.inf
 
         if do_train == True:
-
-            model = self.build_model(input_shapes, nb_classes, pool_factor, kernel_size)
+            with self.strategy.scope():
+                model = self.build_model(input_shapes, nb_classes, pool_factor, kernel_size)
 
             if (self.verbose==True) :
                 model.summary()

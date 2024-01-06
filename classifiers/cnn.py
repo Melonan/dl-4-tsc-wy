@@ -90,7 +90,7 @@ class Classifier_CNN:
 
         file_path = self.output_directory + 'best_model.hdf5'
         reduce_lr = keras.callbacks.ReduceLROnPlateau(monitor='loss', factor=0.5, patience=50, 
-                                                    min_lr=0.000025)
+                                                    min_lr=0.000015)
         model_checkpoint = keras.callbacks.ModelCheckpoint(filepath=file_path, monitor='loss',
                                                         save_best_only=True)
         early_stopping = keras.callbacks.EarlyStopping(monitor='val_loss', patience=80, 
