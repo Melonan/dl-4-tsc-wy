@@ -2,6 +2,7 @@ import numpy as np
 from sklearn.model_selection import KFold
 from sklearn.preprocessing import StandardScaler
 from utils.utils import create_directory
+import logging
 
 def create_classifier(classifier_name, input_shape, nb_classes, output_directory, verbose=True):
     if classifier_name == 'fcn':
@@ -46,13 +47,12 @@ def fit_splits(classifier, X, Y, batch_size=16, epochs=500, n_splits=5):
         x_train_fold, x_val_fold = X[train_index], X[val_index]
         y_train_fold, y_val_fold = Y[train_index], Y[val_index]
         mini_batch_size = int(min(x_train_fold.shape[0]/10, batch_size))
-        print(f"fold {fold_no}: x_train_fold.shape={x_train_fold.shape}, y_train_fold.shape={y_train_fold.shape}")
+        logging.info(f"fold {fold_no}: x_train_fold.shape={x_train_fold.shape}, y_train_fold.shape={y_train_fold.shape}")
 
         output_directory_this_fold = ori_output_directory + 'fold_'+str(fold_no)+'/'
         classifier.output_directory = output_directory_this_fold
 
         create_directory(output_directory_this_fold)
-
         classifier.model = classifier.build_model(X.shape[1:], Y.shape[1],lr=0.00025)
         classifier.model.summary()
         classifier.model.load_weights(ori_output_directory + 'model_init.hdf5')
@@ -77,7 +77,7 @@ def fit_splits_for_mcnn(classifier, X, Y, epochs=300, n_splits=5):
         x_train_fold, x_val_fold = X[train_index], X[val_index]
         y_train_fold, y_val_fold = Y[train_index], Y[val_index]
         # mini_batch_size = int(min(x_train_fold.shape[0]/10, batch_size))
-        print(f"fold {fold_no}: x_train_fold.shape={x_train_fold.shape}, y_train_fold.shape={y_train_fold.shape}")
+        logging.info(f"fold {fold_no}: x_train_fold.shape={x_train_fold.shape}, y_train_fold.shape={y_train_fold.shape}")
 
         output_directory_this_fold = ori_output_directory + 'fold_'+str(fold_no)+'/'
         classifier.output_directory = output_directory_this_fold
@@ -116,10 +116,10 @@ def summarize_results(histories):
         total_val_acc.append(np.mean(history.history['val_accuracy']))
 
     # 打印结果
-    print(f'Average training loss: {np.mean(total_loss)}')
-    print(f'Average training accuracy: {np.mean(total_acc)}')
-    print(f'Average validation loss: {np.mean(total_val_loss)}')
-    print(f'Average validation accuracy: {np.mean(total_val_acc)}')
+    logging.info(f'Average training loss: {np.mean(total_loss)}')
+    logging.info(f'Average training accuracy: {np.mean(total_acc)}')
+    logging.info(f'Average validation loss: {np.mean(total_val_loss)}')
+    logging.info(f'Average validation accuracy: {np.mean(total_val_acc)}')
     
 
 def standard_scaler_total(X):
@@ -155,7 +155,7 @@ def standard_scaler_individual(X_sample):
         # Reshape the data for StandardScaler (flattening timepoints and channels)
         # 这一句有和没有没区别
         sample_reshaped = X_sample[i].reshape(-1, X_sample.shape[-1])
-        # print(f'sample_reshaped.shape:{sample_reshaped.shape}')
+        # logging.info(f'sample_reshaped.shape:{sample_reshaped.shape}')
         # Initialize a new scaler for each sample
         scaler_individual = StandardScaler()
         # Fit the scaler on the data and transform

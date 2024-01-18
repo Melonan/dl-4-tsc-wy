@@ -20,7 +20,6 @@ class Classifier_CNN:
                 self.model.summary()
             self.verbose = verbose
             self.model.save_weights(self.output_directory + 'model_init.hdf5')
-
         return
 
 
