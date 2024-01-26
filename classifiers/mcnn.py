@@ -13,7 +13,7 @@ class Classifier_MCNN:
         self.output_directory = output_directory
         self.verbose = verbose
         # self.pool_factors = [2,3,5] # used for hyperparameters grid search
-        self.pool_factors = [200,150,100,50]
+        self.pool_factors = [200,100,50,40,30,25]
         self.filter_sizes = [0.005,0.01,0.02] # used for hyperparameters grid search 
         # self.filter_sizes = [0.05,0.1,0.2] # used for hyperparameters grid search 
         # self.strategy = tf.distribute.MirroredStrategy()
@@ -154,9 +154,13 @@ class Classifier_MCNN:
         # windowbase, stepsize, num
         # 移动窗口大小，移动窗口每次的增加值，总共进行多少次
         
-        # "170Kailuan-relu-3"
-        ma_base,ma_step,ma_num   = 3, 2, 4
+        # "170Kailuan-relu-4"
+        ma_base,ma_step,ma_num   = 4, 2, 3
         ds_base,ds_step, ds_num  = 2, 1, 2
+        
+        # "170Kailuan-relu-3"
+        # ma_base,ma_step,ma_num   = 3, 2, 4
+        # ds_base,ds_step, ds_num  = 2, 1, 2
         
         # "170Kailuan-relu-2"
         # ma_base,ma_step,ma_num   = 5, 6, 1

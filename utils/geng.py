@@ -37,7 +37,7 @@ def create_classifier(classifier_name, input_shape, nb_classes, output_directory
         return inception.Classifier_INCEPTION(output_directory, input_shape, nb_classes, verbose)
 
 
-def fit_splits(classifier, X, Y, batch_size=16, epochs=500, n_splits=5):
+def fit_splits(classifier, X, Y, batch_size=16, epochs=500, n_splits=5,learning_rate=0.001):
     kf = KFold(n_splits=n_splits, shuffle=True, random_state=42)
     fold_no = 1
     histories = []
@@ -53,7 +53,9 @@ def fit_splits(classifier, X, Y, batch_size=16, epochs=500, n_splits=5):
         classifier.output_directory = output_directory_this_fold
 
         create_directory(output_directory_this_fold)
-        classifier.model = classifier.build_model(X.shape[1:], Y.shape[1],lr=0.00025)
+        # classifier.model = classifier.build_model(X.shape[1:], Y.shape[1],lr=0.00025)
+        classifier.model = classifier.build_model(X.shape[1:], Y.shape[1],lr=learning_rate)
+        
         classifier.model.summary()
         classifier.model.load_weights(ori_output_directory + 'model_init.hdf5')
 
